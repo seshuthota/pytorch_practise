@@ -3,18 +3,23 @@ import torch.nn as nn
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-VGG16_layers = [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"]
+VGG_types = {
+    "VGG11": [64, "M", 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
+    "VGG13": [64, 64, "M", 128, 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
+    "VGG16": [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M", ],
+    "VGG19": [64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512, "M", 512, 512, 512, 512, "M", ],
+}
 
 
 # After this Flatter 4096x4096x1000
 
 
-class VGG16(nn.Module):
+class VGG_net(nn.Module):
 
-    def __init__(self, in_chanels, num_classes):
-        super(VGG16, self).__init__()
+    def __init__(self, in_chanels, num_classes, type):
+        super(VGG_net, self).__init__()
         self.in_channels = in_chanels
-        self.conv_layers = self.create_conv_layers(VGG16_layers)
+        self.conv_layers = self.create_conv_layers(type)
         self.fcs = nn.Sequential(
             nn.Linear(in_features=512 * 7 * 7, out_features=4096),
             nn.ReLU(),
@@ -42,8 +47,8 @@ class VGG16(nn.Module):
                 layers += [
                     nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3, 3), stride=(1, 1),
                               padding=(1, 1)),
-                    nn.BatchNorm2d(x),
-                    nn.ReLU()
+                    # nn.BatchNorm2d(x),
+                    # nn.ReLU()
                 ]
                 in_channels = x
             elif isinstance(x, str):
@@ -52,6 +57,7 @@ class VGG16(nn.Module):
         return nn.Sequential(*layers)
 
 
-model = VGG16(in_chanels=3, num_classes=1000)
-img = torch.randn(64, 3, 224, 224)
+model = VGG_net(in_chanels=3, num_classes=1000, type=VGG_types["VGG16"]).to(device)
+print(model)
+img = torch.randn(32, 3, 224, 224).to(device)
 print(model(img).shape)
