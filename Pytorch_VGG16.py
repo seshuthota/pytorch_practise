@@ -33,19 +33,19 @@ class VGG16(nn.Module):
 
     def create_conv_layers(self, architecture):
         layers = []
-        in_chanels = self.in_channels
+        in_channels = self.in_channels
 
         for x in architecture:
             if isinstance(x, int):
                 out_channels = x
 
                 layers += [
-                    nn.Conv2d(in_channels=in_chanels, out_channels=out_channels, kernel_size=(3, 3), stride=(1, 1),
+                    nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3, 3), stride=(1, 1),
                               padding=(1, 1)),
                     nn.BatchNorm2d(x),
                     nn.ReLU()
                 ]
-                in_chanels = x
+                in_channels = x
             elif isinstance(x, str):
                 layers += [nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))]
 
