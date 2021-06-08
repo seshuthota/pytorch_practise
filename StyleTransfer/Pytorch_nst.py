@@ -40,7 +40,7 @@ style_img = image_loader("style.jpg")
 
 content_img = image_loader("annahathaway.png")
 
-#assert style_img.shape == content_img.shape, "Both the images should be of same dimension"
+# assert style_img.shape == content_img.shape, "Both the images should be of same dimension"
 
 unloader = transforms.ToPILImage()
 
@@ -116,7 +116,11 @@ style_layers_default = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 
 
 def get_style_model_and_loss(cnn, normalization_mean, normaliazation_std, style_img, content_img,
-                             content_layers=content_layers_default, style_layers=style_layers_default):
+                             content_layers=None, style_layers=None):
+    if style_layers is None:
+        style_layers = style_layers_default
+    if content_layers is None:
+        content_layers = content_layers_default
     cnn = copy.deepcopy(cnn)
     normalization = Normalization(normalization_mean, normaliazation_std).to(device)
 
@@ -178,7 +182,7 @@ def run_style_transfer(cnn, normalization_mean, normalization_std,
     model, style_losses, content_losses = get_style_model_and_loss(cnn, normalization_mean=normalization_mean,
                                                                    normaliazation_std=normalization_std,
                                                                    style_img=style_img, content_img=content_img)
-    print(model)
+    #print(model)
     optimizer = get_input_optimizer(input_img)
     print("Optimizing..")
     run = [0]
